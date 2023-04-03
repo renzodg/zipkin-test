@@ -1,0 +1,17 @@
+server:
+  port: 8000
+  servlet:
+    context-path: /
+
+spring:
+  sleuth:
+    sampler:
+      probability: 0
+  zipkin:
+    service:
+      name: user-service
+    base-url: http://localhost:9411
+    sender:
+      type: web
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration,org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration

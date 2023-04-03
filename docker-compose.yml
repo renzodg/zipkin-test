@@ -1,0 +1,36 @@
+version: '2.4'
+
+services:
+  elasticsearch:
+    image: opensearchproject/opensearch:2.3.0
+    container_name: elasticsearch
+    environment:
+      - cluster.name=elasticsearch
+      - discovery.type=single-node
+      - DISABLE_INSTALL_DEMO_CONFIG=true
+      - DISABLE_SECURITY_PLUGIN=true
+    ports:
+      - 9200:9200
+      - 9300:9300
+  zipkin:
+    image: openzipkin/zipkin-slim:2.24
+    container_name: zipkin
+    depends_on:
+      - elasticsearch
+    # Environment settings are defined here https://github.com/openzipkin/zipkin/blob/master/zipkin-server/README.md#environment-variables
+    environment:
+      - STORAGE_TYPE=elasticsearch
+      - ES_HOSTS=http://elasticsearch:9200
+      - JAVA_OPTS=-Xms512m -Xmx512m -XX:+ExitOnOutOfMemoryError
+    ports:
+      - 9411:9411
+  zipkin-dependencies:
+    image: openzipkin/zipkin-dependencies:2.6.4
+    container_name: zipkin-dependencies
+    depends_on:
+      - elasticsearch
+    environment:
+      - STORAGE_TYPE=elasticsearch
+      - ES_HOSTS=http://elasticsearch:9200
+      - ZIPKIN_LOG_LEVEL=DEBUG
+    user: root
